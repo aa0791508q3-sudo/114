@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學校NAME一鍵通 | 青春期末專題展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-creamy: #f6f1eb; 
+            --latte-accent: #d7c5b4;
+            --main-text: #4a3f35;
+            --glow-sun: rgba(245, 220, 180, 0.35); 
+            --glow-dawn: rgba(220, 200, 190, 0.25);
+        }
+
+        body {
+            background-color: var(--bg-creamy);
+            color: var(--main-text);
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background-image: radial-gradient(rgba(74, 63, 53, 0.02) 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+        }
+
+        h1, h2, .font-serif {
+            font-family: 'Noto Serif TC', serif;
+        }
+
+        /* 氛圍燈與閃爍粒子背景 */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #f6f1eb, #eee4da);
+        }
+
+        .light-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            animation: float 28s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            width: 800px;
+            height: 800px;
+            background: var(--glow-sun);
+            top: -250px;
+            right: -100px;
+        }
+
+        .orb-2 {
+            width: 900px;
+            height: 900px;
+            background: var(--glow-dawn);
+            bottom: -300px;
+            left: -150px;
+            animation-duration: 35s;
+        }
+
+        /* 閃爍粒子動畫 */
+        .sparkle {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            filter: blur(1px);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: var(--max-opacity); transform: scale(1.2); }
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 60px) scale(1.05); }
+        }
+
+        /* 內容卡片 */
+        .content-card {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            box-shadow: 0 12px 30px -10px rgba(74, 63, 53, 0.05);
+            transition: all 0.4s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 40px -10px rgba(74, 63, 53, 0.1);
+        }
+
+        .name-accent {
+            color: #8c705d;
+            position: relative;
+            padding: 0 4px;
+        }
+        
+        .name-accent::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background: rgba(140, 112, 93, 0.1);
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .btn-launch {
+            background: #6d594a;
+            color: #f6f1eb;
+            padding: 18px 64px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 100px;
+            box-shadow: 0 8px 20px rgba(109, 89, 74, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+        }
+
+        .btn-launch:hover {
+            background: #5a4a3d;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(109, 89, 74, 0.25);
+        }
+
+        .tape-deco {
+            position: absolute;
+            width: 100px;
+            height: 30px;
+            background: rgba(215, 197, 180, 0.4);
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            backdrop-filter: blur(1px);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center min-h-screen py-20 px-8">
+
+    <!-- 氛圍燈背景 -->
+    <div class="ambient-bg" id="sparkle-container">
+        <div class="light-orb orb-1"></div>
+        <div class="light-orb orb-2"></div>
+        <!-- 粒子將由 JS 生成 -->
+    </div>
+
+    <div class="max-w-4xl w-full">
+        <header class="text-center mb-28">
+            <div class="inline-block px-5 py-1.5 bg-white bg-opacity-30 text-[#6d594a] rounded-full text-xs font-bold tracking-[0.2em] mb-10 border border-white border-opacity-40">
+                ✨ SHINING STUDENT PROJECT
+            </div>
+            <h1 class="text-6xl md:text-7xl font-bold mb-8 text-[#4a3f35] tracking-tight">
+                學校<span class="name-accent">NAME</span>一鍵通
+            </h1>
+            <p class="text-xl text-[#6d594a] font-medium italic opacity-70">
+                「點亮你的校園生活，讓效率與美感並存。」
+            </p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <section class="lg:col-span-2 content-card p-12 relative">
+                <div class="tape-deco"></div>
+                <h2 class="text-2xl font-bold mb-8 flex items-center text-[#4a3f35]">
+                    <span class="w-1.5 h-6 bg-[#8c705d] rounded-full mr-3 opacity-60"></span>
+                    專案理念
+                </h2>
+                <div class="space-y-6 text-[#5a4a3d] leading-loose text-lg">
+                    <p>
+                        在繁忙的課堂與社團之間，我們希望為大家找回一點「閃耀」的時刻。<span class="font-bold border-b border-[#d7c5b4]">「學校NAME一鍵通」</span> 的存在，就是為了將那些繁瑣的雜事一掃而空。
+                    </p>
+                    <p>
+                        不只是整合系統，我們更在乎你使用時的每一秒感受。溫潤的拿鐵色調配上微光閃爍，讓每一次點擊都像是在繁重的讀書生活中，透出的一絲陽光。
+                    </p>
+                </div>
+            </section>
+
+            <div class="space-y-8">
+                <section class="content-card p-8">
+                    <h3 class="font-bold text-lg text-[#6d594a] mb-5">✨ 專案亮點</h3>
+                    <ul class="space-y-5 text-sm text-[#5a4a3d]">
+                        <li class="flex items-center">
+                            <span class="text-[#8c705d] mr-2 opacity-50">✦</span> 閃耀極簡的校園導航
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-[#8c705d] mr-2 opacity-50">✦</span> 智慧型動態考程提醒
+                        </li>
+                        <li class="flex items-center">
+                            <span class="text-[#8c705d] mr-2 opacity-50">✦</span> 直覺式極簡 UI 邏輯
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="content-card p-8 bg-opacity-40">
+                    <h3 class="font-bold text-lg text-[#6d594a] mb-5">🛠 技術架構</h3>
+                    <div class="flex flex-wrap gap-2.5">
+                        <span class="px-3 py-1 bg-white bg-opacity-40 text-[11px] rounded-md text-[#6d594a] border border-[#d7c5b4]">Vanilla JS</span>
+                        <span class="px-3 py-1 bg-white bg-opacity-40 text-[11px] rounded-md text-[#6d594a] border border-[#d7c5b4]">Modern CSS</span>
+                        <span class="px-3 py-1 bg-white bg-opacity-40 text-[11px] rounded-md text-[#6d594a] border border-[#d7c5b4]">API Hub</span>
+                    </div>
+                </section>
+            </div>
+
+            <section class="lg:col-span-3 text-center py-20">
+                <div class="mb-12 text-[#6d594a] opacity-30 font-serif tracking-[0.6em] text-xs uppercase">
+                    Your light will guide the way
+                </div>
+                
+                <button id="launchBtn" class="btn-launch">
+                    啟動專案執行檔
+                </button>
+                
+                <p class="mt-10 text-[#6d594a] text-sm opacity-50 font-light tracking-widest uppercase">
+                    Ready to shine in your school life
+                </p>
+            </section>
+        </main>
+
+        <footer class="mt-24 text-center pb-16 opacity-40 border-t border-[#d7c5b4] pt-12">
+            <p class="text-xs tracking-[0.2em] uppercase font-light">
+                Information Technology Project | Senior High Collection
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // 生成閃爍粒子
+        function createSparkles() {
+            const container = document.getElementById('sparkle-container');
+            const count = 40; // 粒子數量
+
+            for (let i = 0; i < count; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                
+                // 隨機屬性
+                const size = Math.random() * 3 + 1 + 'px';
+                const left = Math.random() * 100 + '%';
+                const top = Math.random() * 100 + '%';
+                const duration = Math.random() * 3 + 2 + 's';
+                const delay = Math.random() * 5 + 's';
+                const maxOpacity = Math.random() * 0.4 + 0.2;
+
+                sparkle.style.width = size;
+                sparkle.style.height = size;
+                sparkle.style.left = left;
+                sparkle.style.top = top;
+                sparkle.style.setProperty('--duration', duration);
+                sparkle.style.setProperty('--max-opacity', maxOpacity);
+                sparkle.style.animationDelay = delay;
+
+                container.appendChild(sparkle);
+            }
+        }
+
+        window.onload = () => {
+            createSparkles();
+        };
+
+        const launchBtn = document.getElementById('launchBtn');
+        launchBtn.addEventListener('click', () => {
+            launchBtn.disabled = true;
+            launchBtn.innerText = "載入中...";
+            
+            setTimeout(() => {
+                const modal = document.createElement('div');
+                modal.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(74,63,53,0.15);backdrop-filter:blur(8px);display:flex;justify-content:center;align-items:center;z-index:1000;animation:fadeIn 0.4s ease;";
+                modal.innerHTML = `
+                    <div style="background:#fcfaf8;padding:50px;border-radius:40px;text-align:center;box-shadow:0 30px 70px rgba(74,63,53,0.1);max-width:320px;border:1px solid #fff;">
+                        <div style="font-size:40px;margin-bottom:20px;">✨</div>
+                        <h3 style="color:#4a3f35;font-weight:bold;margin-bottom:12px;font-size:20px;">啟動成功</h3>
+                        <p style="color:#6d594a;font-size:14px;margin-bottom:25px;line-height:1.6;">系統已就緒，即將帶領您進入閃耀的校園生活。</p>
+                        <button onclick="this.parentElement.parentElement.remove()" style="background:#6d594a;color:#fff;border:none;padding:12px 40px;border-radius:50px;cursor:pointer;font-weight:600;transition:0.3s;">好的</button>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                launchBtn.innerText = "✨ 已啟動";
+                launchBtn.style.background = "#8c705d";
+                launchBtn.disabled = false;
+            }, 800);
+        });
+    </script>
+</body>
+</html>
